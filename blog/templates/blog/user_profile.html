@@ -1,0 +1,103 @@
+{% extends 'blog/base.html' %}
+
+{% block title %} Profile Settings {% endblock title %}
+
+{% block content %}
+
+    {% if user.is_authenticated %}
+    <h1>Hello, {{request.user.username}}!</h1><br>
+    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+        <div>
+            <aside class="actions">
+                <a class="btn btn-secondary" href="{% url 'user_profile_edit' %}">
+                    {% include './icons/pencil-fill.svg' %} Edit Profile 
+                </a>
+                <a class="btn btn-secondary" href="{% url 'user_mail_edit' %}">
+                    {% include './icons/pencil-fill.svg' %} Update Email Address
+                </a>
+                <a class="btn btn-secondary" href="profile/password">
+                    {% include './icons/pencil-fill.svg' %} Change Password 
+                </a>
+                <a class="btn btn-outline-danger" href="{% url 'profile_delete' %}" onclick="return confirm('Are you sure? This is permanent.');">
+                    {% include './icons/trash.svg' %} Delete User
+                </a>
+            </aside><br><br>
+            <img src="{{ profile.avatar.url }}" width="400" class="rounded-circle"><br><br>
+        </div>
+        <div>       
+            <h2>Name: {{profile.name}}</h2><br>
+            <h2>Date Joined: {{request.user.date_joined}}</h2><br>
+            <h2>E-mail Address: {{request.user.email}}</h2><br>
+            <h2>Birthday: {{profile.birthdate}}</h2><br>
+            <h2>Location: {{profile.location}}</h2><br>
+        </div>
+    </div>
+
+    <div style="background-color:rgba(0,0,0,0.1)">
+        <h2>Bio: {{profile.bio}}</h2><br>  
+    </div>
+    <br><br>
+
+    <h2>Your Posts</h2><br>
+        {% if posts %}
+            {% for post in posts %}
+                <article class="post" style="background-color:rgba(0,0,0,0.1)">
+                    <time class="date">
+                        {{ post.posted_date }}
+                    </time>
+                    <h3><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h3>
+                    <p>{{ post.text|linebreaksbr }}</p>
+                    <aside class="actions">
+                        {% if post.author.id == user.id %}
+                            <a class="btn btn-primary" href="{% url 'post_edit' pk=post.pk %}">
+                                {% include './icons/pencil-fill.svg' %} Edit
+                            </a>
+                            <a class="btn btn-outline-danger" href="{% url 'post_delete' pk=post.pk %}" onclick="return confirm('Are you sure? This is permanent.');">
+                                {% include './icons/trash.svg' %} Delete
+                            </a>
+                        {% endif %}
+                    </aside>
+                </article>
+            {% endfor %}
+        {% else %}
+        <p>You have not made any posts yet. <a href="{% url 'post_new' %}">Start now!</a></p>
+        {% endif %}
+    {% endif %}
+    <br>
+    <form method="POST" action="{% url 'post_new' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Make a new post</button>
+    </form>
+    <br><br>
+
+    <br><br>
+    <h2>Your Comments</h2><br>
+        {% if comments %}
+            {% for comment in comments %}
+                <article class="post" style="background-color:rgba(0,0,0,0.1)">
+                    <time class="date">
+                        {{ comment.posted_date }}
+                    </time>
+                    <h3><a href="{% url 'post_detail' pk=comment.post.pk %}">{{ comment.post.title }}</a></h3>
+                    <p>{{ comment.text|linebreaksbr }}</p>
+                    <aside class="actions">
+                        {% if comment.author.id == user.id %}
+                            <a class="btn btn-primary" href="{% url 'comment_edit' pk=comment.pk %}">
+                                {% include './icons/pencil-fill.svg' %} Edit
+                            </a>
+                            <a class="btn btn-outline-danger" href="{% url 'comment_delete' pk=comment.pk %}" onclick="return confirm('Are you sure? This is permanent.');">
+                                {% include './icons/trash.svg' %} Delete
+                            </a>
+                        {% endif %}
+                    </aside>
+                </article>
+            {% endfor %}
+        {% else %}
+            <p>You have not made any comments yet.</p>
+        {% endif %}
+
+    {% if not user.is_authenticated %}
+    <h1>Please register, or log in if you are already registered.</h1>
+    {% endif %}
+
+{% endblock %}

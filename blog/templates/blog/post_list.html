@@ -1,0 +1,23 @@
+{% extends 'blog/base.html' %}
+
+{% block title %} Home {% endblock title %}
+
+{% block content %}
+    {% for post in posts %}
+        <article class="post" style="background-color:rgba(0,0,0,0.1)">
+            <time class="date">
+                {{ post.posted_date }}
+            </time>
+            <h2><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h2>
+            <p>{{ post.text|linebreaksbr }}</p>
+            {% if post.tags.all %}
+                <p> Tags: 
+                    {% for tag in post.tags.all %}
+                        #{{ tag }}
+                    {% endfor %}
+                </p>
+            {% endif %}
+            <p><img src="{{ post.author.profile.avatar.url }}" alt="mdo" width="32" height="32" class="rounded-circle">  <a href="{% url 'user_page' usernamex=post.author %}"> {{ post.author|linebreaksbr }}</a></p>    
+        </article>
+    {% endfor %}
+{% endblock %}

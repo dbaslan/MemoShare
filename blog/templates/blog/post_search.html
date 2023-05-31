@@ -1,0 +1,75 @@
+{% extends 'blog/base.html' %}
+
+{% block title %} Advanced Search {% endblock title %}
+
+{% load static %}
+
+{% block content %}
+    <h1>Advanced Search</h1><br>
+    <link rel="stylesheet" type="text/css" href="{% static "css/advanced_search.css" %}">
+    
+    <div style="display: flex;">
+      <div style="display: flex;">
+
+        <form action="/search" method="get">
+            <label for="text">Title and Content</label>
+            <input type="text" name="query" value="{{ query }}" placeholder="Text"><br>
+            <br>
+            <label for="author">Author</label>
+            <input type="text" name="author" value="{{ author_query }}" placeholder="Author"><br>
+            <br>
+            <label for="text4">Tags</label>
+            <input type="text" name="tag" value="{{ tag_query }}" placeholder="Tag"><br>
+            <br>
+            <label for="date">Exact Date of Memory</label>
+            <input type="date" name="date" value="{{ date_query }}" placeholder="Date"><br>
+            <br>
+            <label for="text6">Location of Memory</label>
+            <input type="text" name="location" value="{{ location_query }}" placeholder="Location"><br>
+            <br>
+            <label for="start">Start date:</label>
+            <input type="date" name="start" value="{{ timestart_query }}" placeholder="Date"><br>
+            <label for="end">End date:</label>
+            <input type="date" name="end" value="{{ timeend_query }}" placeholder="Date"><br>
+            <br>
+            <button type="submit">Search</button>
+
+        </form>
+      </div>
+
+      <br>
+      <br>
+
+      <div>
+        <h1>Search Results for posts including "{{ query }}"</h1>
+        {% if author_query %}
+            <h2>With author: "{{ author_query }}"</h2>
+        {% endif %}
+        {% if tag_query %}
+            <h2>With tags: #{{ tag_query }}</h2>
+        {% endif %}
+        {% if date_query %}
+            <h2>With date: {{ date_query }}</h2>
+        {% endif %}
+        {% if timestart_query %}
+            <h2>After: {{ timestart_query }}</h2>
+        {% endif %}
+        {% if timeend_query %}
+            <h2>Before: {{ timeend_query }}</h2>
+        {% endif %}
+        {% if results %}
+            <ul>
+            {% for post in results %}
+                <li><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No results found.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <br>
+    <br>
+    
+{% endblock %}
